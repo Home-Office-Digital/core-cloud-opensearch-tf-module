@@ -71,22 +71,12 @@ variable "dedicated_master_count" {
   description = "Number of dedicated master nodes when dedicated masters are enabled"
   type        = number
   default     = 3
-
-  validation {
-    condition     = !var.dedicated_master_enabled || var.dedicated_master_count >= 3
-    error_message = "dedicated_master_count must be at least 3 when dedicated_master_enabled is true."
-  }
 }
 
 variable "dedicated_master_type" {
   description = "Instance type for dedicated master nodes"
   type        = string
   default     = "m6g.large.search"
-
-  validation {
-    condition     = !var.dedicated_master_enabled || can(regex("\\.search$", var.dedicated_master_type))
-    error_message = "dedicated_master_type must be set to an OpenSearch instance type when dedicated masters are enabled."
-  }
 }
 
 variable "warm_enabled" {
@@ -99,22 +89,12 @@ variable "warm_count" {
   description = "Number of UltraWarm nodes when warm_enabled is true"
   type        = number
   default     = 2
-
-  validation {
-    condition     = !var.warm_enabled || var.warm_count >= 2
-    error_message = "warm_count must be at least 2 when warm_enabled is true."
-  }
 }
 
 variable "warm_type" {
   description = "Instance type for UltraWarm nodes"
   type        = string
   default     = "ultrawarm1.medium.search"
-
-  validation {
-    condition     = !var.warm_enabled || can(regex("\\.search$", var.warm_type))
-    error_message = "warm_type must be set to an OpenSearch instance type when warm_enabled is true."
-  }
 }
 
 variable "zone_awareness_enabled" {
@@ -127,11 +107,6 @@ variable "zone_awareness_count" {
   description = "Availability zone count used when zone awareness is enabled"
   type        = number
   default     = 2
-
-  validation {
-    condition     = !var.zone_awareness_enabled || contains([2, 3], var.zone_awareness_count)
-    error_message = "zone_awareness_count must be either 2 or 3 when zone awareness is enabled."
-  }
 }
 
 variable "multi_az_with_standby_enabled" {
@@ -150,11 +125,6 @@ variable "ebs_volume_size" {
   description = "EBS volume size in GiB"
   type        = number
   default     = 20
-
-  validation {
-    condition     = !var.ebs_enabled || var.ebs_volume_size >= 10
-    error_message = "ebs_volume_size must be at least 10 when ebs_enabled is true."
-  }
 }
 
 variable "ebs_volume_type" {
@@ -174,7 +144,7 @@ variable "ebs_iops" {
   default     = 3000
 
   validation {
-    condition     = !var.ebs_enabled || var.ebs_iops >= 0
+    condition     = var.ebs_iops >= 0
     error_message = "ebs_iops must be zero or greater."
   }
 }
@@ -185,7 +155,7 @@ variable "ebs_throughput" {
   default     = 125
 
   validation {
-    condition     = !var.ebs_enabled || var.ebs_throughput >= 0
+    condition     = var.ebs_throughput >= 0
     error_message = "ebs_throughput must be zero or greater."
   }
 }
@@ -241,11 +211,6 @@ variable "subnet_ids" {
   description = "Subnet IDs for VPC deployment"
   type        = list(string)
   default     = []
-
-  validation {
-    condition     = (length(var.subnet_ids) == 0 && length(var.security_group_ids) == 0) || (length(var.subnet_ids) > 0 && length(var.security_group_ids) > 0)
-    error_message = "subnet_ids and security_group_ids must either both be set or both be empty."
-  }
 }
 
 variable "security_group_ids" {
@@ -277,13 +242,6 @@ variable "master_user_arn" {
   type        = string
   default     = null
   nullable    = true
-
-  validation {
-    condition = !var.advanced_security_options_enabled || (
-      ((var.master_user_arn != null ? 1 : 0) + ((var.master_user_name != null && var.master_user_password != null) ? 1 : 0)) == 1
-    )
-    error_message = "When advanced_security_options_enabled is true, set either master_user_arn or both master_user_name and master_user_password."
-  }
 }
 
 variable "master_user_name" {
@@ -313,11 +271,6 @@ variable "custom_endpoint_certificate_arn" {
   type        = string
   default     = null
   nullable    = true
-
-  validation {
-    condition     = var.custom_endpoint == null || var.custom_endpoint_certificate_arn != null
-    error_message = "custom_endpoint_certificate_arn must be provided when custom_endpoint is set."
-  }
 }
 
 variable "log_group_retention_in_days" {
@@ -378,4 +331,69 @@ variable "access_policy" {
   description = "Optional JSON access policy for the domain. Leave empty to skip policy creation."
   type        = string
   default     = ""
+}
+
+check "dedicated_master_count_when_enabled" {
+  assert {
+    condition     = !var.dedicated_master_enabled || var.dedicated_master_count >= 3
+    error_message = "dedicated_master_count must be at least 3 when dedicated_master_enabled is true."
+  }
+}
+
+check "dedicated_master_type_when_enabled" {
+  assert {
+    condition     = !var.dedicated_master_enabled || can(regex("\\.search$", var.dedicated_master_type))
+    error_message = "dedicated_master_type must be set to an OpenSearch instance type when dedicated masters are enabled."
+  }
+}
+
+check "warm_count_when_enabled" {
+  assert {
+    condition     = !var.warm_enabled || var.warm_count >= 2
+    error_message = "warm_count must be at least 2 when warm_enabled is true."
+  }
+}
+
+check "warm_type_when_enabled" {
+  assert {
+    condition     = !var.warm_enabled || can(regex("\\.search$", var.warm_type))
+    error_message = "warm_type must be set to an OpenSearch instance type when warm_enabled is true."
+  }
+}
+
+check "zone_awareness_count_when_enabled" {
+  assert {
+    condition     = !var.zone_awareness_enabled || contains([2, 3], var.zone_awareness_count)
+    error_message = "zone_awareness_count must be either 2 or 3 when zone awareness is enabled."
+  }
+}
+
+check "ebs_volume_size_when_enabled" {
+  assert {
+    condition     = !var.ebs_enabled || var.ebs_volume_size >= 10
+    error_message = "ebs_volume_size must be at least 10 when ebs_enabled is true."
+  }
+}
+
+check "subnet_and_security_group_pairing" {
+  assert {
+    condition     = (length(var.subnet_ids) == 0 && length(var.security_group_ids) == 0) || (length(var.subnet_ids) > 0 && length(var.security_group_ids) > 0)
+    error_message = "subnet_ids and security_group_ids must either both be set or both be empty."
+  }
+}
+
+check "advanced_security_master_user_configuration" {
+  assert {
+    condition = !var.advanced_security_options_enabled || (
+      ((var.master_user_arn != null ? 1 : 0) + ((var.master_user_name != null && var.master_user_password != null) ? 1 : 0)) == 1
+    )
+    error_message = "When advanced_security_options_enabled is true, set either master_user_arn or both master_user_name and master_user_password."
+  }
+}
+
+check "custom_endpoint_certificate_required" {
+  assert {
+    condition     = var.custom_endpoint == null || var.custom_endpoint_certificate_arn != null
+    error_message = "custom_endpoint_certificate_arn must be provided when custom_endpoint is set."
+  }
 }
