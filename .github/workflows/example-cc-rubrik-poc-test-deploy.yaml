@@ -1,4 +1,4 @@
-name: Example CCRubrikPOCTest Plan and Apply
+name: Example CCRubrikPOCTest Plan
 
 on:
   push:
@@ -6,14 +6,6 @@ on:
       - feature/CCL-10788-openseach-module
   workflow_dispatch:
     inputs:
-      operation:
-        description: Terraform operation to run
-        required: true
-        type: choice
-        options:
-          - plan
-          - apply
-          - destroy
       working_directory:
         description: Terraform working directory
         required: true
@@ -49,21 +41,6 @@ on:
         required: true
         default: ""
         type: string
-      apply_branch:
-        description: Branch allowed to run apply and destroy
-        required: true
-        default: main
-        type: string
-      confirm_apply:
-        description: Required only for apply. Type APPLY to continue.
-        required: false
-        default: ""
-        type: string
-      confirm_destroy:
-        description: Required only for destroy. Type DESTROY to continue.
-        required: false
-        default: ""
-        type: string
 
 permissions:
   contents: read
@@ -73,7 +50,7 @@ permissions:
 jobs:
   terraform-plan:
     name: Terraform Plan Example
-    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && (inputs.operation == 'plan' || inputs.operation == 'apply'))
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -99,85 +76,3 @@ jobs:
           account_id: "${{ github.event_name == 'push' && '118490267426' || inputs.account_id }}"
           aws-region: "${{ github.event_name == 'push' && 'eu-west-2' || inputs.aws_region }}"
           role-to-assume: "${{ github.event_name == 'push' && 'GitHubActionsTerraformOpenSearch' || inputs.role_to_assume }}"
-
-  terraform-apply:
-    name: Terraform Apply Example
-    needs: terraform-plan
-    if: inputs.operation == 'apply' && github.ref_name == inputs.apply_branch && inputs.confirm_apply == 'APPLY'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Terraform Init
-        id: init
-        uses: Home-Office-Digital/core-cloud-workflow-terraform-actions/actions/init@main
-        with:
-          working-directory: "${{ inputs.working_directory }}"
-          account_id: "${{ inputs.account_id }}"
-          aws-region: "${{ inputs.aws_region }}"
-          role-to-assume: "${{ inputs.role_to_assume }}"
-          state-bucket: "${{ inputs.state_bucket }}"
-          state-key: "${{ inputs.state_key }}"
-          state-dynamodb-table: "${{ inputs.state_dynamodb_table }}"
-
-      - name: Terraform Apply
-        id: apply
-        uses: Home-Office-Digital/core-cloud-workflow-terraform-actions/actions/apply@main
-        with:
-          apply-branch: "${{ inputs.apply_branch }}"
-          working-directory: "${{ inputs.working_directory }}"
-          account_id: "${{ inputs.account_id }}"
-          aws-region: "${{ inputs.aws_region }}"
-          role-to-assume: "${{ inputs.role_to_assume }}"
-
-  terraform-destroy:
-    name: Terraform Destroy Example
-    if: inputs.operation == 'destroy' && github.ref_name == inputs.apply_branch && inputs.confirm_destroy == 'DESTROY'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Terraform Init
-        id: init
-        uses: Home-Office-Digital/core-cloud-workflow-terraform-actions/actions/init@main
-        with:
-          working-directory: "${{ inputs.working_directory }}"
-          account_id: "${{ inputs.account_id }}"
-          aws-region: "${{ inputs.aws_region }}"
-          role-to-assume: "${{ inputs.role_to_assume }}"
-          state-bucket: "${{ inputs.state_bucket }}"
-          state-key: "${{ inputs.state_key }}"
-          state-dynamodb-table: "${{ inputs.state_dynamodb_table }}"
-
-      - name: Terraform Destroy
-        id: destroy
-        working-directory: "${{ inputs.working_directory }}"
-        run: terraform destroy -auto-approve -input=false
-
-  apply-safety-check:
-    name: Apply Safety Check
-    if: inputs.operation == 'apply' && (github.ref_name != inputs.apply_branch || inputs.confirm_apply != 'APPLY')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Explain apply requirements
-        run: |
-          echo "Apply was requested but safety requirements were not met."
-          echo "Requirements:"
-          echo "1) Run from apply_branch"
-          echo "2) Set confirm_apply to APPLY"
-          exit 1
-
-  destroy-safety-check:
-    name: Destroy Safety Check
-    if: inputs.operation == 'destroy' && (github.ref_name != inputs.apply_branch || inputs.confirm_destroy != 'DESTROY')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Explain destroy requirements
-        run: |
-          echo "Destroy was requested but safety requirements were not met."
-          echo "Requirements:"
-          echo "1) Run from apply_branch"
-          echo "2) Set confirm_destroy to DESTROY"
-          exit 1

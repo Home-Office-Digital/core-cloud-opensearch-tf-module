@@ -63,23 +63,26 @@ Note: run one of the init-state commands first. Do not run plain `terraform init
 
 ## GitHub Actions Deployment Workflow
 
-This repo includes a manual workflow for the example deployment:
+This repo includes split workflows for plan/apply/destroy:
 
-- Workflow file: [ .github/workflows/example-cc-rubrik-poc-test-deploy.yaml ](.github/workflows/example-cc-rubrik-poc-test-deploy.yaml)
-- Triggers:
-	- `push` to `feature/CCL-10788-openseach-module` (runs plan only)
-	- `workflow_dispatch` (plan, apply, or destroy)
-- Operations: `plan`, `apply`, or `destroy`
-
-Apply and destroy safeguards in the workflow:
-
-- `apply` and `destroy` run only on `apply_branch`
-- `confirm_apply` must be set to `APPLY`
-- `confirm_destroy` must be set to `DESTROY`
+- Plan workflow: [.github/workflows/example-cc-rubrik-poc-test-deploy.yaml](.github/workflows/example-cc-rubrik-poc-test-deploy.yaml)
+	- Triggers:
+	- `push` to `feature/CCL-10788-openseach-module`
+	- `workflow_dispatch` for manual plan runs
+- Apply workflow: [.github/workflows/example-cc-rubrik-poc-test-apply.yaml](.github/workflows/example-cc-rubrik-poc-test-apply.yaml)
+	- Trigger: `workflow_dispatch` only
+	- Safeguards:
+	- runs only on `apply_branch`
+	- `confirm_apply` must be `APPLY`
+- Destroy workflow: [.github/workflows/example-cc-rubrik-poc-test-destroy.yaml](.github/workflows/example-cc-rubrik-poc-test-destroy.yaml)
+	- Trigger: `workflow_dispatch` only
+	- Safeguards:
+	- runs only on `apply_branch`
+	- `confirm_destroy` must be `DESTROY`
 
 For push-triggered plan runs, set the role name in [.github/workflows/example-cc-rubrik-poc-test-deploy.yaml](.github/workflows/example-cc-rubrik-poc-test-deploy.yaml) to your GitHub OIDC role (for example: GitHubActionsTerraformOpenSearch).
 
-Required inputs when running the workflow:
+Common required inputs when running apply/destroy workflows:
 
 - `working_directory` (default `./examples/cc-rubrik-poc-test`)
 - `account_id` (default `118490267426`)
@@ -89,8 +92,11 @@ Required inputs when running the workflow:
 - `state_dynamodb_table` (optional, default empty)
 - `role_to_assume` (OIDC role name used by Core Cloud terraform actions)
 - `apply_branch` (branch allowed to execute apply/destroy, default `main`)
-- `confirm_apply` (required for apply)
-- `confirm_destroy` (required for destroy)
+
+Operation-specific confirmations:
+
+- Apply workflow requires `confirm_apply=APPLY`
+- Destroy workflow requires `confirm_destroy=DESTROY`
 
 ## Advanced: Manual Backend Commands
 
