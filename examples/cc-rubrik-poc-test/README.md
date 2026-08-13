@@ -70,6 +70,8 @@ This repo includes split workflows for plan/apply/destroy:
 	- `push` to `feature/CCL-10788-openseach-module`
 	- `workflow_dispatch` for manual plan runs
 - Apply workflow: [.github/workflows/example-cc-rubrik-poc-test-apply.yaml](.github/workflows/example-cc-rubrik-poc-test-apply.yaml)
+	- Triggers:
+	- `workflow_run` when `Example CCRubrikPOCTest Plan` completes successfully on `feature/CCL-10788-openseach-module`
 	- Trigger: `workflow_dispatch` only
 	- Safeguards:
 	- runs only on `apply_branch`
