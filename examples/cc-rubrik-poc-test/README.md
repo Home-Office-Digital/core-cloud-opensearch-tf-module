@@ -83,6 +83,9 @@ Required inputs when running the workflow:
 - `working_directory` (default `./examples/cc-rubrik-poc-test`)
 - `account_id` (default `118490267426`)
 - `aws_region` (default `eu-west-2`)
+- `state_bucket` (default `cc-rubrik-poc-test-tfstate-opensearch`)
+- `state_key` (default `opensearch/example/terraform.tfstate`)
+- `state_dynamodb_table` (optional, default empty)
 - `role_to_assume` (OIDC role name used by Core Cloud terraform actions)
 
 ## Advanced: Manual Backend Commands
