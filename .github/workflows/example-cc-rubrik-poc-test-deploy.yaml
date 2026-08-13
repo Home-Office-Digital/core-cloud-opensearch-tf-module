@@ -29,7 +29,7 @@ on:
         default: eu-west-2
         type: string
       role_to_assume:
-        description: OIDC role ARN to assume for Terraform actions
+        description: OIDC role name to assume for Terraform actions
         required: true
         default: ""
         type: string
@@ -60,7 +60,7 @@ jobs:
           working-directory: "${{ github.event_name == 'push' && './examples/cc-rubrik-poc-test' || inputs.working_directory }}"
           account_id: "${{ github.event_name == 'push' && '118490267426' || inputs.account_id }}"
           aws-region: "${{ github.event_name == 'push' && 'eu-west-2' || inputs.aws_region }}"
-          role-to-assume: "${{ github.event_name == 'push' && 'arn:aws:iam::118490267426:role/GitHubActionsTerraformOpenSearch' || inputs.role_to_assume }}"
+          role-to-assume: "${{ github.event_name == 'push' && 'GitHubActionsTerraformOpenSearch' || inputs.role_to_assume }}"
 
   terraform-apply:
     name: Terraform Apply Example

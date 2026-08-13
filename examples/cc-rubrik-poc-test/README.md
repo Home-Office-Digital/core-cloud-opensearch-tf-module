@@ -76,14 +76,14 @@ Apply safeguards in the workflow:
 - `apply` runs only on `main`
 - `confirm_apply` must be set to `APPLY`
 
-For push-triggered plan runs, replace `arn:aws:iam::118490267426:role/REPLACE_WITH_GITHUB_OIDC_ROLE` in [ .github/workflows/example-cc-rubrik-poc-test-deploy.yaml ](.github/workflows/example-cc-rubrik-poc-test-deploy.yaml) with a valid GitHub OIDC role ARN.
+For push-triggered plan runs, set the role name in [.github/workflows/example-cc-rubrik-poc-test-deploy.yaml](.github/workflows/example-cc-rubrik-poc-test-deploy.yaml) to your GitHub OIDC role (for example: GitHubActionsTerraformOpenSearch).
 
 Required inputs when running the workflow:
 
 - `working_directory` (default `./examples/cc-rubrik-poc-test`)
 - `account_id` (default `118490267426`)
 - `aws_region` (default `eu-west-2`)
-- `role_to_assume` (OIDC role ARN used by Core Cloud terraform actions)
+- `role_to_assume` (OIDC role name used by Core Cloud terraform actions)
 
 ## Advanced: Manual Backend Commands
 

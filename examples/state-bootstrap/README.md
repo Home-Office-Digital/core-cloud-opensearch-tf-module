@@ -25,6 +25,7 @@ View outputs:
 ```sh
 terraform -chdir=examples/state-bootstrap output backend_hcl
 terraform -chdir=examples/state-bootstrap output github_oidc_role_arn
+terraform -chdir=examples/state-bootstrap output github_oidc_role_name
 terraform -chdir=examples/state-bootstrap output github_oidc_policy_arn
 ```
 
@@ -51,9 +52,7 @@ terraform -chdir=examples/state-bootstrap apply \
 	-var='create_github_oidc_role=false'
 ```
 
-After creation, set the role ARN in [.github/workflows/example-cc-rubrik-poc-test-deploy.yaml](.github/workflows/example-cc-rubrik-poc-test-deploy.yaml) by replacing:
-
-- arn:aws:iam::118490267426:role/REPLACE_WITH_GITHUB_OIDC_ROLE
+After creation, set the role name in [.github/workflows/example-cc-rubrik-poc-test-deploy.yaml](.github/workflows/example-cc-rubrik-poc-test-deploy.yaml). You can use the value from github_oidc_role_name output.
 
 When no longer needed:
 

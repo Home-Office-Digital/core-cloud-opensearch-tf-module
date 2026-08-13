@@ -20,6 +20,11 @@ output "github_oidc_role_arn" {
   value       = try(aws_iam_role.github_actions_terraform[0].arn, null)
 }
 
+output "github_oidc_role_name" {
+  description = "IAM role name for GitHub OIDC workflow runs"
+  value       = try(aws_iam_role.github_actions_terraform[0].name, null)
+}
+
 output "github_oidc_policy_arn" {
   description = "IAM policy ARN attached to the GitHub OIDC role"
   value       = try(aws_iam_policy.github_actions_terraform[0].arn, null)
