@@ -12,6 +12,6 @@ terraform {
 }
 
 provider "aws" {
-  profile = var.aws_profile
+  profile = trimspace(var.aws_profile) != "" ? var.aws_profile : null
   region  = var.region
 }

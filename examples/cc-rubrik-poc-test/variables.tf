@@ -1,7 +1,7 @@
 variable "aws_profile" {
-  description = "AWS CLI profile used for deployment"
+  description = "Optional AWS CLI profile used for deployment; leave empty to use environment/OIDC credentials"
   type        = string
-  default     = "CCRubrikPOCTest"
+  default     = ""
 }
 
 variable "region" {

@@ -45,7 +45,7 @@ terraform -chdir=examples/cc-rubrik-poc-test plan
 
 ## Defaults
 
-- AWS profile: `CCRubrikPOCTest`
+- AWS profile: empty (uses environment credentials/OIDC); for local SSO use `CCRubrikPOCTest`
 - Region: `eu-west-2`
 - Domain name: `cc-rubrik-poc-test`
 - Instance type: `t3.small.search`
