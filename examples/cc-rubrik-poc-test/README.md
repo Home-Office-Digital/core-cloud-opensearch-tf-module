@@ -68,13 +68,14 @@ This repo includes a manual workflow for the example deployment:
 - Workflow file: [ .github/workflows/example-cc-rubrik-poc-test-deploy.yaml ](.github/workflows/example-cc-rubrik-poc-test-deploy.yaml)
 - Triggers:
 	- `push` to `feature/CCL-10788-openseach-module` (runs plan only)
-	- `workflow_dispatch` (plan or apply)
-- Operations: `plan` or `apply`
+	- `workflow_dispatch` (plan, apply, or destroy)
+- Operations: `plan`, `apply`, or `destroy`
 
-Apply safeguards in the workflow:
+Apply and destroy safeguards in the workflow:
 
-- `apply` runs only on `main`
+- `apply` and `destroy` run only on `apply_branch`
 - `confirm_apply` must be set to `APPLY`
+- `confirm_destroy` must be set to `DESTROY`
 
 For push-triggered plan runs, set the role name in [.github/workflows/example-cc-rubrik-poc-test-deploy.yaml](.github/workflows/example-cc-rubrik-poc-test-deploy.yaml) to your GitHub OIDC role (for example: GitHubActionsTerraformOpenSearch).
 
@@ -87,6 +88,9 @@ Required inputs when running the workflow:
 - `state_key` (default `opensearch/example/terraform.tfstate`)
 - `state_dynamodb_table` (optional, default empty)
 - `role_to_assume` (OIDC role name used by Core Cloud terraform actions)
+- `apply_branch` (branch allowed to execute apply/destroy, default `main`)
+- `confirm_apply` (required for apply)
+- `confirm_destroy` (required for destroy)
 
 ## Advanced: Manual Backend Commands
 
