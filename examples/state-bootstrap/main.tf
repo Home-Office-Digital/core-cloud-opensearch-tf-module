@@ -5,6 +5,10 @@ locals {
   project_name      = join("-", slice(local.bucket_name_parts, 0, length(local.bucket_name_parts) - 2))
   module_bucket     = local.bucket_name_parts[length(local.bucket_name_parts) - 2]
   environment       = local.bucket_name_parts[length(local.bucket_name_parts) - 1]
+  repo_owner        = split("/", var.github_repository)[0]
+  repo_name         = split("/", var.github_repository)[1]
+  repo_owner_lower  = lower(local.repo_owner)
+  repo_name_lower   = lower(local.repo_name)
 }
 
 module "state_bucket" {
@@ -48,9 +52,13 @@ data "aws_iam_policy_document" "github_actions_assume_role" {
         [
           "repo:${var.github_repository}:*",
           "repo:${lower(var.github_repository)}:*",
+          "repo:${local.repo_owner}@*/${local.repo_name}@*:*",
+          "repo:${local.repo_owner_lower}@*/${local.repo_name_lower}@*:*",
         ],
         [for branch in var.github_branches : "repo:${var.github_repository}:ref:refs/heads/${branch}"],
-        [for branch in var.github_branches : "repo:${lower(var.github_repository)}:ref:refs/heads/${branch}"]
+        [for branch in var.github_branches : "repo:${lower(var.github_repository)}:ref:refs/heads/${branch}"],
+        [for branch in var.github_branches : "repo:${local.repo_owner}@*/${local.repo_name}@*:ref:refs/heads/${branch}"],
+        [for branch in var.github_branches : "repo:${local.repo_owner_lower}@*/${local.repo_name_lower}@*:ref:refs/heads/${branch}"]
       )
     }
   }
