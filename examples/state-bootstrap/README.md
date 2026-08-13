@@ -44,6 +44,7 @@ By default, role trust is restricted to this repository and these branches:
 - feature/CCL-10788-openseach-module
 
 The trust policy also allows other GitHub OIDC subject types from the same repository (for example branch, tag, or workflow context variations) to avoid brittle subject mismatch failures.
+It includes both the provided repository case and lowercase form to avoid OIDC subject case-mismatch authorization issues.
 
 You can override these at apply time:
 
