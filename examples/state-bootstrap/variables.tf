@@ -39,9 +39,14 @@ variable "kms_alias" {
 }
 
 variable "email_address" {
-  description = "Optional shared project mailbox for S3 module notifications"
+  description = "Shared project mailbox for S3 module notifications"
   type        = string
-  default     = ""
+  default     = "core-cloud-opensearch@example.com"
+
+  validation {
+    condition     = can(regex("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$", var.email_address))
+    error_message = "email_address must be a valid email format, for example team@example.com."
+  }
 }
 
 variable "s3_module_tags" {

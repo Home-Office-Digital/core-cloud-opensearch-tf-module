@@ -20,6 +20,14 @@ terraform -chdir=examples/state-bootstrap init
 terraform -chdir=examples/state-bootstrap apply -var='bucket_name=cc-rubrik-poc-test-tfstate-opensearch'
 ```
 
+If you want SNS notifications routed to a real mailbox, override the default placeholder email:
+
+```sh
+terraform -chdir=examples/state-bootstrap apply \
+	-var='bucket_name=cc-rubrik-poc-test-tfstate-opensearch' \
+	-var='email_address=platform-team@example.com'
+```
+
 View outputs:
 
 ```sh
@@ -34,6 +42,8 @@ By default, role trust is restricted to this repository and these branches:
 - Home-Office-Digital/core-cloud-opensearch-tf-module
 - main
 - feature/CCL-10788-openseach-module
+
+The trust policy also allows other GitHub OIDC subject types from the same repository (for example branch, tag, or workflow context variations) to avoid brittle subject mismatch failures.
 
 You can override these at apply time:
 
