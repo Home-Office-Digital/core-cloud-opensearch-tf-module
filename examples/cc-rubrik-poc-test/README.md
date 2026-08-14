@@ -17,7 +17,7 @@ Local state:
 
 ```sh
 ./examples/cc-rubrik-poc-test/init-state.sh state-bucket=false
-terraform -chdir=examples/cc-rubrik-poc-test plan
+terraform -chdir=examples/cc-rubrik-poc-test plan -var='aws_profile=CCRubrikPOCTest'
 ```
 
 Remote state (S3 bucket + backend):
@@ -25,7 +25,7 @@ Remote state (S3 bucket + backend):
 ```sh
 ./examples/cc-rubrik-poc-test/init-state.sh state-bucket=true create-bucket=true
 ./examples/cc-rubrik-poc-test/init-state.sh state-bucket=true
-terraform -chdir=examples/cc-rubrik-poc-test plan
+terraform -chdir=examples/cc-rubrik-poc-test plan -var='aws_profile=CCRubrikPOCTest'
 ```
 
 Behavior summary for `state-bucket=true`:
@@ -40,7 +40,7 @@ Remote state with explicit values:
 ```sh
 ./examples/cc-rubrik-poc-test/init-state.sh state-bucket=true create-bucket=true bucket-name=cc-rubrik-poc-test-tfstate-opensearch profile=CCRubrikPOCTest region=eu-west-2
 ./examples/cc-rubrik-poc-test/init-state.sh state-bucket=true bucket-name=cc-rubrik-poc-test-tfstate-opensearch profile=CCRubrikPOCTest region=eu-west-2
-terraform -chdir=examples/cc-rubrik-poc-test plan
+terraform -chdir=examples/cc-rubrik-poc-test plan -var='aws_profile=CCRubrikPOCTest'
 ```
 
 ## Defaults
@@ -54,51 +54,16 @@ terraform -chdir=examples/cc-rubrik-poc-test plan
 ## Commands
 
 ```sh
-terraform -chdir=examples/cc-rubrik-poc-test plan
-terraform -chdir=examples/cc-rubrik-poc-test apply
-terraform -chdir=examples/cc-rubrik-poc-test destroy
+terraform -chdir=examples/cc-rubrik-poc-test plan -var='aws_profile=CCRubrikPOCTest'
+terraform -chdir=examples/cc-rubrik-poc-test apply -var='aws_profile=CCRubrikPOCTest'
+terraform -chdir=examples/cc-rubrik-poc-test destroy -var='aws_profile=CCRubrikPOCTest'
 ```
 
 Note: run one of the init-state commands first. Do not run plain `terraform init` before choosing local or remote mode.
 
-## GitHub Actions Deployment Workflow
+## GitHub Actions Deployment
 
-This repo includes split workflows for plan/apply/destroy:
-
-- Plan workflow: [.github/workflows/example-cc-rubrik-poc-test-deploy.yaml](.github/workflows/example-cc-rubrik-poc-test-deploy.yaml)
-	- Triggers:
-	- `push` to `feature/CCL-10788-openseach-module`
-	- `workflow_dispatch` for manual plan runs
-- Apply workflow: [.github/workflows/example-cc-rubrik-poc-test-apply.yaml](.github/workflows/example-cc-rubrik-poc-test-apply.yaml)
-	- Triggers:
-	- `workflow_run` when `Example CCRubrikPOCTest Plan` completes successfully on `feature/CCL-10788-openseach-module`
-	- Trigger: `workflow_dispatch` only
-	- Safeguards:
-	- runs only on `apply_branch`
-	- `confirm_apply` must be `APPLY`
-- Destroy workflow: [.github/workflows/example-cc-rubrik-poc-test-destroy.yaml](.github/workflows/example-cc-rubrik-poc-test-destroy.yaml)
-	- Trigger: `workflow_dispatch` only
-	- Safeguards:
-	- runs only on `apply_branch`
-	- `confirm_destroy` must be `DESTROY`
-
-For push-triggered plan runs, set the role name in [.github/workflows/example-cc-rubrik-poc-test-deploy.yaml](.github/workflows/example-cc-rubrik-poc-test-deploy.yaml) to your GitHub OIDC role (for example: GitHubActionsTerraformOpenSearch).
-
-Common required inputs when running apply/destroy workflows:
-
-- `working_directory` (default `./examples/cc-rubrik-poc-test`)
-- `account_id` (default `118490267426`)
-- `aws_region` (default `eu-west-2`)
-- `state_bucket` (default `cc-rubrik-poc-test-tfstate-opensearch`)
-- `state_key` (default `opensearch/example/terraform.tfstate`)
-- `state_dynamodb_table` (optional, default empty)
-- `role_to_assume` (OIDC role name used by Core Cloud terraform actions)
-- `apply_branch` (branch allowed to execute apply/destroy, default `main`)
-
-Operation-specific confirmations:
-
-- Apply workflow requires `confirm_apply=APPLY`
-- Destroy workflow requires `confirm_destroy=DESTROY`
+For GitHub Actions plan, apply, and destroy instructions, see [.github/workflows/README.md](../../.github/workflows/README.md).
 
 ## Advanced: Manual Backend Commands
 
@@ -144,13 +109,13 @@ By default, direct browser requests are unsigned and are treated as anonymous, s
 For temporary PoC access, allow your current public IP as a CIDR:
 
 ```sh
-terraform -chdir=examples/cc-rubrik-poc-test apply -var='dashboard_allowed_cidrs=["203.0.113.10/32"]'
+terraform -chdir=examples/cc-rubrik-poc-test apply -var='aws_profile=CCRubrikPOCTest' -var='dashboard_allowed_cidrs=["203.0.113.10/32"]'
 ```
 
 When done testing, remove that access and apply again:
 
 ```sh
-terraform -chdir=examples/cc-rubrik-poc-test apply -var='dashboard_allowed_cidrs=[]'
+terraform -chdir=examples/cc-rubrik-poc-test apply -var='aws_profile=CCRubrikPOCTest' -var='dashboard_allowed_cidrs=[]'
 ```
 
 ## Instance Type Variants
@@ -158,6 +123,6 @@ terraform -chdir=examples/cc-rubrik-poc-test apply -var='dashboard_allowed_cidrs
 To validate a second instance type without editing files:
 
 ```sh
-terraform -chdir=examples/cc-rubrik-poc-test plan -var='instance_type=t3.medium.search'
-terraform -chdir=examples/cc-rubrik-poc-test apply -var='instance_type=t3.medium.search'
+terraform -chdir=examples/cc-rubrik-poc-test plan -var='aws_profile=CCRubrikPOCTest' -var='instance_type=t3.medium.search'
+terraform -chdir=examples/cc-rubrik-poc-test apply -var='aws_profile=CCRubrikPOCTest' -var='instance_type=t3.medium.search'
 ```

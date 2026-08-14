@@ -13,11 +13,6 @@ on:
         required: true
         default: ./examples/cc-rubrik-poc-test
         type: string
-      account_id:
-        description: AWS account ID for OIDC role assumption
-        required: true
-        default: "118490267426"
-        type: string
       aws_region:
         description: AWS region
         required: true
@@ -38,15 +33,10 @@ on:
         required: false
         default: ""
         type: string
-      role_to_assume:
-        description: OIDC role name to assume for Terraform actions
-        required: true
-        default: ""
-        type: string
       apply_branch:
         description: Branch allowed to run apply
         required: true
-        default: main
+        default: feature/CCL-10788-openseach-module
         type: string
       confirm_apply:
         description: Required. Type APPLY to continue.
@@ -77,9 +67,9 @@ jobs:
         uses: Home-Office-Digital/core-cloud-workflow-terraform-actions/actions/init@main
         with:
           working-directory: "${{ github.event_name == 'workflow_dispatch' && inputs.working_directory || './examples/cc-rubrik-poc-test' }}"
-          account_id: "${{ github.event_name == 'workflow_dispatch' && inputs.account_id || '118490267426' }}"
+          account_id: "${{ secrets.AWS_ACCOUNT_ID }}"
           aws-region: "${{ github.event_name == 'workflow_dispatch' && inputs.aws_region || 'eu-west-2' }}"
-          role-to-assume: "${{ github.event_name == 'workflow_dispatch' && inputs.role_to_assume || 'GitHubActionsTerraformOpenSearch' }}"
+          role-to-assume: "${{ secrets.AWS_ROLE_TO_ASSUME }}"
           state-bucket: "${{ github.event_name == 'workflow_dispatch' && inputs.state_bucket || 'cc-rubrik-poc-test-tfstate-opensearch' }}"
           state-key: "${{ github.event_name == 'workflow_dispatch' && inputs.state_key || 'opensearch/example/terraform.tfstate' }}"
           state-dynamodb-table: "${{ github.event_name == 'workflow_dispatch' && inputs.state_dynamodb_table || '' }}"
@@ -89,9 +79,9 @@ jobs:
         uses: Home-Office-Digital/core-cloud-workflow-terraform-actions/actions/plan@main
         with:
           working-directory: "${{ github.event_name == 'workflow_dispatch' && inputs.working_directory || './examples/cc-rubrik-poc-test' }}"
-          account_id: "${{ github.event_name == 'workflow_dispatch' && inputs.account_id || '118490267426' }}"
+          account_id: "${{ secrets.AWS_ACCOUNT_ID }}"
           aws-region: "${{ github.event_name == 'workflow_dispatch' && inputs.aws_region || 'eu-west-2' }}"
-          role-to-assume: "${{ github.event_name == 'workflow_dispatch' && inputs.role_to_assume || 'GitHubActionsTerraformOpenSearch' }}"
+          role-to-assume: "${{ secrets.AWS_ROLE_TO_ASSUME }}"
 
   terraform-apply:
     name: Terraform Apply Example
@@ -111,9 +101,9 @@ jobs:
         uses: Home-Office-Digital/core-cloud-workflow-terraform-actions/actions/init@main
         with:
           working-directory: "${{ github.event_name == 'workflow_dispatch' && inputs.working_directory || './examples/cc-rubrik-poc-test' }}"
-          account_id: "${{ github.event_name == 'workflow_dispatch' && inputs.account_id || '118490267426' }}"
+          account_id: "${{ secrets.AWS_ACCOUNT_ID }}"
           aws-region: "${{ github.event_name == 'workflow_dispatch' && inputs.aws_region || 'eu-west-2' }}"
-          role-to-assume: "${{ github.event_name == 'workflow_dispatch' && inputs.role_to_assume || 'GitHubActionsTerraformOpenSearch' }}"
+          role-to-assume: "${{ secrets.AWS_ROLE_TO_ASSUME }}"
           state-bucket: "${{ github.event_name == 'workflow_dispatch' && inputs.state_bucket || 'cc-rubrik-poc-test-tfstate-opensearch' }}"
           state-key: "${{ github.event_name == 'workflow_dispatch' && inputs.state_key || 'opensearch/example/terraform.tfstate' }}"
           state-dynamodb-table: "${{ github.event_name == 'workflow_dispatch' && inputs.state_dynamodb_table || '' }}"
@@ -124,9 +114,9 @@ jobs:
         with:
           apply-branch: "${{ github.event_name == 'workflow_dispatch' && inputs.apply_branch || 'feature/CCL-10788-openseach-module' }}"
           working-directory: "${{ github.event_name == 'workflow_dispatch' && inputs.working_directory || './examples/cc-rubrik-poc-test' }}"
-          account_id: "${{ github.event_name == 'workflow_dispatch' && inputs.account_id || '118490267426' }}"
+          account_id: "${{ secrets.AWS_ACCOUNT_ID }}"
           aws-region: "${{ github.event_name == 'workflow_dispatch' && inputs.aws_region || 'eu-west-2' }}"
-          role-to-assume: "${{ github.event_name == 'workflow_dispatch' && inputs.role_to_assume || 'GitHubActionsTerraformOpenSearch' }}"
+          role-to-assume: "${{ secrets.AWS_ROLE_TO_ASSUME }}"
 
   apply-safety-check:
     name: Apply Safety Check

@@ -11,11 +11,6 @@ on:
         required: true
         default: ./examples/cc-rubrik-poc-test
         type: string
-      account_id:
-        description: AWS account ID for OIDC role assumption
-        required: true
-        default: "118490267426"
-        type: string
       aws_region:
         description: AWS region
         required: true
@@ -34,11 +29,6 @@ on:
       state_dynamodb_table:
         description: Optional DynamoDB state lock table name
         required: false
-        default: ""
-        type: string
-      role_to_assume:
-        description: OIDC role name to assume for Terraform actions
-        required: true
         default: ""
         type: string
 
@@ -61,9 +51,9 @@ jobs:
         uses: Home-Office-Digital/core-cloud-workflow-terraform-actions/actions/init@main
         with:
           working-directory: "${{ github.event_name == 'push' && './examples/cc-rubrik-poc-test' || inputs.working_directory }}"
-          account_id: "${{ github.event_name == 'push' && '118490267426' || inputs.account_id }}"
+          account_id: "${{ secrets.AWS_ACCOUNT_ID }}"
           aws-region: "${{ github.event_name == 'push' && 'eu-west-2' || inputs.aws_region }}"
-          role-to-assume: "${{ github.event_name == 'push' && 'GitHubActionsTerraformOpenSearch' || inputs.role_to_assume }}"
+          role-to-assume: "${{ secrets.AWS_ROLE_TO_ASSUME }}"
           state-bucket: "${{ github.event_name == 'push' && 'cc-rubrik-poc-test-tfstate-opensearch' || inputs.state_bucket }}"
           state-key: "${{ github.event_name == 'push' && 'opensearch/example/terraform.tfstate' || inputs.state_key }}"
           state-dynamodb-table: "${{ github.event_name == 'push' && '' || inputs.state_dynamodb_table }}"
@@ -73,6 +63,6 @@ jobs:
         uses: Home-Office-Digital/core-cloud-workflow-terraform-actions/actions/plan@main
         with:
           working-directory: "${{ github.event_name == 'push' && './examples/cc-rubrik-poc-test' || inputs.working_directory }}"
-          account_id: "${{ github.event_name == 'push' && '118490267426' || inputs.account_id }}"
+          account_id: "${{ secrets.AWS_ACCOUNT_ID }}"
           aws-region: "${{ github.event_name == 'push' && 'eu-west-2' || inputs.aws_region }}"
-          role-to-assume: "${{ github.event_name == 'push' && 'GitHubActionsTerraformOpenSearch' || inputs.role_to_assume }}"
+          role-to-assume: "${{ secrets.AWS_ROLE_TO_ASSUME }}"

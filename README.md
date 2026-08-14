@@ -71,38 +71,69 @@ module "opensearch" {
 }
 ```
 
+## VPC Deployment
+
+To deploy a private OpenSearch domain, the calling configuration must provide existing private `subnet_ids` and appropriate `security_group_ids`. This module creates the OpenSearch domain only; it does not create a VPC, subnets, route tables, or security groups.
+
+A VPC-based OpenSearch endpoint is not publicly reachable. Users need an approved network path into the VPC, such as VPN, Direct Connect, or an internal proxy or bastion access pattern, to reach OpenSearch Dashboards. The IP-based browser access described in the Rubrik PoC example is only applicable to its public-endpoint deployment.
+
 ## Deployable Example
 
-A deployable Rubrik test-account root module is included in [examples/cc-rubrik-poc-test/README.md](examples/cc-rubrik-poc-test/README.md).
+A deployable Rubrik test-account root module is included in [examples/cc-rubrik-poc-test/](examples/cc-rubrik-poc-test/).
 
-It is wired to use the `CCRubrikPOCTest` AWS SSO profile by default.
+Use the dedicated documentation for the deployment method you need:
 
-Quick start (local state):
+- Manual deployment, local AWS SSO, backend initialization, and dashboards access: [examples/cc-rubrik-poc-test/README.md](examples/cc-rubrik-poc-test/README.md)
+- GitHub Actions plan, apply, and destroy workflows: [.github/workflows/README.md](.github/workflows/README.md)
 
-```sh
-./examples/cc-rubrik-poc-test/init-state.sh state-bucket=false
-terraform -chdir=examples/cc-rubrik-poc-test plan
+For state-bucket and OIDC-role bootstrap instructions, see [examples/state-bootstrap/README.md](examples/state-bootstrap/README.md).
+
+### Deployment Flow
+
+```mermaid
+flowchart TD
+  Start[Choose deployment method] --> Method{Manual Terraform or GitHub Actions?}
+
+  Method -->|Manual Terraform| State{Use remote S3 state?}
+  Method -->|GitHub Actions| Secrets[Use AWS_ACCOUNT_ID and AWS_ROLE_TO_ASSUME repository secrets]
+  Secrets --> WorkflowState[Initialize with configured S3 backend]
+  WorkflowState --> WorkflowPlan[Run GitHub Actions plan workflow]
+  WorkflowPlan --> WorkflowApply{Apply workflow path}
+  WorkflowApply -->|Successful plan on configured feature branch| AutoApply[Plan again and apply automatically]
+  WorkflowApply -->|Manual run| ConfirmApply[Select apply_branch and set confirm_apply to APPLY]
+  ConfirmApply --> ManualWorkflowApply[Plan again and apply]
+
+  State -->|No| LocalInit[Initialize Terraform with local state]
+  State -->|Yes| BucketCheck{State bucket exists and is accessible?}
+  BucketCheck -->|Yes| Backend[Generate backend.hcl]
+  BucketCheck -->|No| Create{Was create-bucket=true supplied?}
+  Create -->|No| Stop[Stop and report the missing bucket]
+  Create -->|Yes| Bootstrap[Run state-bootstrap Terraform]
+  Bootstrap --> Backend
+  Backend --> RemoteInit[Initialize Terraform with S3 backend]
+
+  LocalInit --> Network{Provide subnet_ids?}
+  RemoteInit --> Network
+  Network -->|No: current PoC| PublicDomain[Create public OpenSearch domain]
+  PublicDomain --> PublicAccess[Optional Dashboards access from approved IP CIDRs]
+  Network -->|Yes| VpcConfig[Provide private subnet_ids and security_group_ids]
+  VpcConfig --> PrivateDomain[Create VPC-based OpenSearch domain]
+  PrivateDomain --> PrivateAccess[Access Dashboards through VPN, Direct Connect, or internal proxy]
+
+  PublicAccess --> ManualPlan[Run Terraform plan and review]
+  PrivateAccess --> ManualPlan
+  ManualPlan --> ManualApply[Run Terraform apply]
+  ManualApply --> Resources[OpenSearch domain, CloudWatch logs, and domain policy]
+  AutoApply --> Resources
+  ManualWorkflowApply --> Resources
+
+  Resources --> Destroy{Remove deployment?}
+  Destroy -->|Manual Terraform| ManualDestroy[Run Terraform destroy]
+  Destroy -->|GitHub Actions| ConfirmDestroy[Select apply_branch and set confirm_destroy to DESTROY]
+  ConfirmDestroy --> WorkflowDestroy[Run destroy workflow]
 ```
 
-Quick start (remote S3 state):
-
-```sh
-./examples/cc-rubrik-poc-test/init-state.sh state-bucket=true create-bucket=true
-./examples/cc-rubrik-poc-test/init-state.sh state-bucket=true
-terraform -chdir=examples/cc-rubrik-poc-test plan
-```
-
-Quick start (remote S3 state with explicit values):
-
-```sh
-./examples/cc-rubrik-poc-test/init-state.sh state-bucket=true create-bucket=true bucket-name=cc-rubrik-poc-test-tfstate-opensearch profile=CCRubrikPOCTest region=eu-west-2
-./examples/cc-rubrik-poc-test/init-state.sh state-bucket=true bucket-name=cc-rubrik-poc-test-tfstate-opensearch profile=CCRubrikPOCTest region=eu-west-2
-terraform -chdir=examples/cc-rubrik-poc-test plan
-```
-
-For manual backend initialization and state migration commands, see [examples/cc-rubrik-poc-test/README.md](examples/cc-rubrik-poc-test/README.md).
-
-For repeat validation with a different instance type, override `instance_type` at plan or apply time.
+Manual Terraform can use local or remote S3 state. GitHub Actions always uses the configured remote S3 state and the `AWS_ACCOUNT_ID` and `AWS_ROLE_TO_ASSUME` repository secrets. The helper creates a state bucket only when `create-bucket=true` is explicitly supplied. The current Rubrik PoC takes the public-domain branch; a private deployment requires the calling configuration to provide existing private subnets and security groups.
 
 ## Design Notes
 
