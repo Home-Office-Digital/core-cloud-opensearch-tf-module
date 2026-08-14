@@ -12,7 +12,7 @@ locals {
 }
 
 module "state_bucket" {
-  source = "git::https://github.com/Home-Office-Digital/core-cloud-s3-tf-module.git?ref=main"
+  source = "git::https://github.com/Home-Office-Digital/core-cloud-s3-tf-module.git?ref=1.0.0"
 
   account_id      = data.aws_caller_identity.current.account_id
   bucket_name     = local.module_bucket

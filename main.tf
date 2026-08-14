@@ -69,6 +69,8 @@ resource "aws_cloudwatch_log_resource_policy" "this" {
 }
 
 #checkov:skip=CKV_AWS_318: Dedicated masters are caller-configurable; when enabled, validation requires at least three. The default supports lower-cost non-HA environments.
+#checkov:skip=CKV2_AWS_59: Dedicated masters are optional for supported lower-cost non-HA deployments; production callers enable three masters.
+#checkov:skip=CKV_AWS_317: Audit logs require advanced security and are configured by callers that enable it; default deployments remain compatible without advanced security.
 resource "aws_opensearch_domain" "this" {
   domain_name    = var.name
   engine_version = var.engine_version
