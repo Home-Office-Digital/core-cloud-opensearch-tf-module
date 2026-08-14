@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - feature/CCL-10788-openseach-module
+  # checkov:skip=CKV_GHA_7: Manual runs require explicit Terraform directory, region, and state configuration.
   workflow_dispatch:
     inputs:
       working_directory:

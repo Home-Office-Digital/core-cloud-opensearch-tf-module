@@ -1,6 +1,7 @@
 name: Example OpenSearchTest Destroy
 
 on:
+  # checkov:skip=CKV_GHA_7: Manual runs require explicit Terraform configuration and a DESTROY confirmation.
   workflow_dispatch:
     inputs:
       working_directory:

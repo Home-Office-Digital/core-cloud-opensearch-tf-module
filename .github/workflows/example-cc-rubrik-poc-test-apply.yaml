@@ -6,6 +6,7 @@ on:
       - Example OpenSearchTest Plan
     types:
       - completed
+  # checkov:skip=CKV_GHA_7: Manual runs require explicit Terraform configuration and an APPLY confirmation.
   workflow_dispatch:
     inputs:
       working_directory:
