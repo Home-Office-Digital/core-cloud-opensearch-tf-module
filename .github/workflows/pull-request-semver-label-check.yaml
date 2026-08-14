@@ -24,16 +24,31 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Parse the SemVer label
-        id: label
-        uses: UKHomeOffice/match-label-action@v1
-        with:
-          labels: minor,major,patch
-          mode: singular
+      - name: Resolve SemVer increment
+        id: increment
+        env:
+          PR_LABELS: ${{ join(github.event.pull_request.labels.*.name, ' ') }}
+        run: |
+          count=0
+          increment='patch'
+
+          for label in major minor patch; do
+            if [[ " ${PR_LABELS} " == *" ${label} "* ]]; then
+              increment="${label}"
+              count=$((count + 1))
+            fi
+          done
+
+          if (( count > 1 )); then
+            echo 'Only one of major, minor, or patch may be applied to a PR.'
+            exit 1
+          fi
+
+          echo "increment=${increment}" >> "${GITHUB_OUTPUT}"
 
       - name: Calculate SemVer value
         id: calculate
         uses: UKHomeOffice/semver-calculate-action@v2
         with:
-          increment: ${{ steps.label.outputs.matchedLabels }}
+          increment: ${{ steps.increment.outputs.increment }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
