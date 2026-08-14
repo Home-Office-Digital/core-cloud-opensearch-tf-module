@@ -20,12 +20,6 @@ variable "bucket_name" {
   }
 }
 
-variable "force_destroy" {
-  description = "Deprecated: kept for backward compatibility, not used when S3 module manages bucket lifecycle"
-  type        = bool
-  default     = false
-}
-
 variable "state_key_prefix" {
   description = "Object prefix inside the state bucket used by this repository"
   type        = string
