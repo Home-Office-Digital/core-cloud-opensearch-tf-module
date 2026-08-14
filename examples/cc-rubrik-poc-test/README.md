@@ -1,4 +1,4 @@
-#Open SearchTest Example
+# OpenSearch Test Example
 
 This example is a thin root module for deploying the child module into the `AWS_PROFILE_NAME` AWS SSO profile.
 
