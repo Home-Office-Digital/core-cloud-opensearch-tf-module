@@ -45,7 +45,6 @@ data "aws_iam_policy_document" "cloudwatch_log_delivery" {
     actions = [
       "logs:CreateLogStream",
       "logs:PutLogEvents",
-      "logs:PutLogEventsBatch",
     ]
 
     resources = [for log_group in aws_cloudwatch_log_group.this : "${log_group.arn}:*"]
