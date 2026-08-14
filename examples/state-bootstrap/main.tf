@@ -100,6 +100,7 @@ data "aws_iam_policy_document" "github_actions_terraform_permissions" {
       "logs:DescribeLogGroups",
       "logs:TagLogGroup",
       "logs:UntagLogGroup",
+      "logs:ListTagsForResource",
       "logs:PutResourcePolicy",
       "logs:DescribeResourcePolicies",
       "logs:DeleteResourcePolicy",
