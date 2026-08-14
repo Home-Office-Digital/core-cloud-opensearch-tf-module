@@ -8,8 +8,8 @@ Before running a workflow, make sure that:
 
 - The S3 state bucket already exists and the configured state key is correct.
 - The GitHub OIDC role exists in the target AWS account and permits the required Terraform and OpenSearch actions.
-- Repository secret `AWS_ACCOUNT_ID` contains the target 12-digit AWS account ID.
-- Repository secret `AWS_ROLE_TO_ASSUME` contains only the OIDC IAM role name, for example `GitHubActionsTerraformOpenSearch`. Do not provide a full role ARN; the shared Terraform action builds it from both secrets.
+- Repository secret `AWS_ACCOUNT_ID_RUBRIK_POC_TEST` contains the target 12-digit AWS account ID.
+- Repository secret `AWS_ROLE_TO_ASSUME_RUBRIK_POC_TEST` contains only the OIDC IAM role name, for example `GitHubActionsTerraformOpenSearch`. Do not provide a full role ARN; the shared Terraform action builds it from both secrets.
 - The workflow runs from the branch specified by `apply_branch` when applying or destroying resources.
 
 The state bucket and OIDC role can be provisioned with [examples/state-bootstrap/README.md](../../examples/state-bootstrap/README.md).
@@ -26,7 +26,7 @@ All workflows use remote S3 state. Use the same `state_bucket`, `state_key`, and
 
 Workflow: [example-cc-rubrik-poc-test-deploy.yaml](example-cc-rubrik-poc-test-deploy.yaml)
 
-The plan workflow runs when code is pushed to `feature/CCL-10788-openseach-module`, or it can be started manually from the GitHub Actions page. Both paths use the repository secrets `AWS_ACCOUNT_ID` and `AWS_ROLE_TO_ASSUME`.
+The plan workflow runs when code is pushed to `feature/CCL-10788-openseach-module`, or it can be started manually from the GitHub Actions page. Both paths use the repository secrets `AWS_ACCOUNT_ID_RUBRIK_POC_TEST` and `AWS_ROLE_TO_ASSUME_RUBRIK_POC_TEST`.
 
 For a manual run, select **Example CCRubrikPOCTest Plan**, choose **Run workflow**, and provide the inputs below. The defaults describe the current Rubrik PoC deployment.
 

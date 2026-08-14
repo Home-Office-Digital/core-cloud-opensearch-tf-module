@@ -96,10 +96,10 @@ After a successful apply, configure these repository secrets:
 
 | Secret | Value |
 |---|---|
-| `AWS_ACCOUNT_ID` | The 12-digit account ID returned by `aws sts get-caller-identity --profile CCRubrikPOCTest --query Account --output text` |
-| `AWS_ROLE_TO_ASSUME` | The `github_oidc_role_name` output, for example `GitHubActionsTerraformOpenSearch` |
+| `AWS_ACCOUNT_ID_RUBRIK_POC_TEST` | The 12-digit account ID returned by `aws sts get-caller-identity --profile CCRubrikPOCTest --query Account --output text` |
+| `AWS_ROLE_TO_ASSUME_RUBRIK_POC_TEST` | The `github_oidc_role_name` output, for example `GitHubActionsTerraformOpenSearch` |
 
-`AWS_ROLE_TO_ASSUME` must contain only the role name, not the `github_oidc_role_arn` value. The workflow action constructs the role ARN from both secrets.
+`AWS_ROLE_TO_ASSUME_RUBRIK_POC_TEST` must contain only the role name, not the `github_oidc_role_arn` value. The workflow action constructs the role ARN from both secrets.
 
 Use these matching values when starting a workflow:
 

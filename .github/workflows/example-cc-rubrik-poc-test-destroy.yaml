@@ -58,9 +58,9 @@ jobs:
         uses: Home-Office-Digital/core-cloud-workflow-terraform-actions/actions/init@main
         with:
           working-directory: "${{ inputs.working_directory }}"
-          account_id: "${{ secrets.AWS_ACCOUNT_ID }}"
+          account_id: "${{ secrets.AWS_ACCOUNT_ID_RUBRIK_POC_TEST }}"
           aws-region: "${{ inputs.aws_region }}"
-          role-to-assume: "${{ secrets.AWS_ROLE_TO_ASSUME }}"
+          role-to-assume: "${{ secrets.AWS_ROLE_TO_ASSUME_RUBRIK_POC_TEST }}"
           state-bucket: "${{ inputs.state_bucket }}"
           state-key: "${{ inputs.state_key }}"
           state-dynamodb-table: "${{ inputs.state_dynamodb_table }}"

@@ -95,7 +95,7 @@ flowchart TD
   Start[Choose deployment method] --> Method{Manual Terraform or GitHub Actions?}
 
   Method -->|Manual Terraform| State{Use remote S3 state?}
-  Method -->|GitHub Actions| Secrets[Use AWS_ACCOUNT_ID and AWS_ROLE_TO_ASSUME repository secrets]
+  Method -->|GitHub Actions| Secrets[Use AWS_ACCOUNT_ID_RUBRIK_POC_TEST and AWS_ROLE_TO_ASSUME_RUBRIK_POC_TEST repository secrets]
   Secrets --> WorkflowState[Initialize with configured S3 backend]
   WorkflowState --> WorkflowPlan[Run GitHub Actions plan workflow]
   WorkflowPlan --> WorkflowApply{Apply workflow path}
@@ -133,7 +133,7 @@ flowchart TD
   ConfirmDestroy --> WorkflowDestroy[Run destroy workflow]
 ```
 
-Manual Terraform can use local or remote S3 state. GitHub Actions always uses the configured remote S3 state and the `AWS_ACCOUNT_ID` and `AWS_ROLE_TO_ASSUME` repository secrets. The helper creates a state bucket only when `create-bucket=true` is explicitly supplied. The current Rubrik PoC takes the public-domain branch; a private deployment requires the calling configuration to provide existing private subnets and security groups.
+Manual Terraform can use local or remote S3 state. GitHub Actions always uses the configured remote S3 state and the `AWS_ACCOUNT_ID_RUBRIK_POC_TEST` and `AWS_ROLE_TO_ASSUME_RUBRIK_POC_TEST` repository secrets. The helper creates a state bucket only when `create-bucket=true` is explicitly supplied. The current Rubrik PoC takes the public-domain branch; a private deployment requires the calling configuration to provide existing private subnets and security groups.
 
 ## Design Notes
 

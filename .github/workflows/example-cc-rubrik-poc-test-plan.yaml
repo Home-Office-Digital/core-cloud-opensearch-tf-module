@@ -51,9 +51,9 @@ jobs:
         uses: Home-Office-Digital/core-cloud-workflow-terraform-actions/actions/init@main
         with:
           working-directory: "${{ github.event_name == 'push' && './examples/cc-rubrik-poc-test' || inputs.working_directory }}"
-          account_id: "${{ secrets.AWS_ACCOUNT_ID }}"
+          account_id: "${{ secrets.AWS_ACCOUNT_ID_RUBRIK_POC_TEST }}"
           aws-region: "${{ github.event_name == 'push' && 'eu-west-2' || inputs.aws_region }}"
-          role-to-assume: "${{ secrets.AWS_ROLE_TO_ASSUME }}"
+          role-to-assume: "${{ secrets.AWS_ROLE_TO_ASSUME_RUBRIK_POC_TEST }}"
           state-bucket: "${{ github.event_name == 'push' && 'cc-rubrik-poc-test-tfstate-opensearch' || inputs.state_bucket }}"
           state-key: "${{ github.event_name == 'push' && 'opensearch/example/terraform.tfstate' || inputs.state_key }}"
           state-dynamodb-table: "${{ github.event_name == 'push' && '' || inputs.state_dynamodb_table }}"
@@ -63,6 +63,6 @@ jobs:
         uses: Home-Office-Digital/core-cloud-workflow-terraform-actions/actions/plan@main
         with:
           working-directory: "${{ github.event_name == 'push' && './examples/cc-rubrik-poc-test' || inputs.working_directory }}"
-          account_id: "${{ secrets.AWS_ACCOUNT_ID }}"
+          account_id: "${{ secrets.AWS_ACCOUNT_ID_RUBRIK_POC_TEST }}"
           aws-region: "${{ github.event_name == 'push' && 'eu-west-2' || inputs.aws_region }}"
-          role-to-assume: "${{ secrets.AWS_ROLE_TO_ASSUME }}"
+          role-to-assume: "${{ secrets.AWS_ROLE_TO_ASSUME_RUBRIK_POC_TEST }}"

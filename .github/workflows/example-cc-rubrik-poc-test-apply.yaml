@@ -67,9 +67,9 @@ jobs:
         uses: Home-Office-Digital/core-cloud-workflow-terraform-actions/actions/init@main
         with:
           working-directory: "${{ github.event_name == 'workflow_dispatch' && inputs.working_directory || './examples/cc-rubrik-poc-test' }}"
-          account_id: "${{ secrets.AWS_ACCOUNT_ID }}"
+          account_id: "${{ secrets.AWS_ACCOUNT_ID_RUBRIK_POC_TEST }}"
           aws-region: "${{ github.event_name == 'workflow_dispatch' && inputs.aws_region || 'eu-west-2' }}"
-          role-to-assume: "${{ secrets.AWS_ROLE_TO_ASSUME }}"
+          role-to-assume: "${{ secrets.AWS_ROLE_TO_ASSUME_RUBRIK_POC_TEST }}"
           state-bucket: "${{ github.event_name == 'workflow_dispatch' && inputs.state_bucket || 'cc-rubrik-poc-test-tfstate-opensearch' }}"
           state-key: "${{ github.event_name == 'workflow_dispatch' && inputs.state_key || 'opensearch/example/terraform.tfstate' }}"
           state-dynamodb-table: "${{ github.event_name == 'workflow_dispatch' && inputs.state_dynamodb_table || '' }}"
@@ -79,9 +79,9 @@ jobs:
         uses: Home-Office-Digital/core-cloud-workflow-terraform-actions/actions/plan@main
         with:
           working-directory: "${{ github.event_name == 'workflow_dispatch' && inputs.working_directory || './examples/cc-rubrik-poc-test' }}"
-          account_id: "${{ secrets.AWS_ACCOUNT_ID }}"
+          account_id: "${{ secrets.AWS_ACCOUNT_ID_RUBRIK_POC_TEST }}"
           aws-region: "${{ github.event_name == 'workflow_dispatch' && inputs.aws_region || 'eu-west-2' }}"
-          role-to-assume: "${{ secrets.AWS_ROLE_TO_ASSUME }}"
+          role-to-assume: "${{ secrets.AWS_ROLE_TO_ASSUME_RUBRIK_POC_TEST }}"
 
   terraform-apply:
     name: Terraform Apply Example
@@ -101,9 +101,9 @@ jobs:
         uses: Home-Office-Digital/core-cloud-workflow-terraform-actions/actions/init@main
         with:
           working-directory: "${{ github.event_name == 'workflow_dispatch' && inputs.working_directory || './examples/cc-rubrik-poc-test' }}"
-          account_id: "${{ secrets.AWS_ACCOUNT_ID }}"
+          account_id: "${{ secrets.AWS_ACCOUNT_ID_RUBRIK_POC_TEST }}"
           aws-region: "${{ github.event_name == 'workflow_dispatch' && inputs.aws_region || 'eu-west-2' }}"
-          role-to-assume: "${{ secrets.AWS_ROLE_TO_ASSUME }}"
+          role-to-assume: "${{ secrets.AWS_ROLE_TO_ASSUME_RUBRIK_POC_TEST }}"
           state-bucket: "${{ github.event_name == 'workflow_dispatch' && inputs.state_bucket || 'cc-rubrik-poc-test-tfstate-opensearch' }}"
           state-key: "${{ github.event_name == 'workflow_dispatch' && inputs.state_key || 'opensearch/example/terraform.tfstate' }}"
           state-dynamodb-table: "${{ github.event_name == 'workflow_dispatch' && inputs.state_dynamodb_table || '' }}"
@@ -114,9 +114,9 @@ jobs:
         with:
           apply-branch: "${{ github.event_name == 'workflow_dispatch' && inputs.apply_branch || 'feature/CCL-10788-openseach-module' }}"
           working-directory: "${{ github.event_name == 'workflow_dispatch' && inputs.working_directory || './examples/cc-rubrik-poc-test' }}"
-          account_id: "${{ secrets.AWS_ACCOUNT_ID }}"
+          account_id: "${{ secrets.AWS_ACCOUNT_ID_RUBRIK_POC_TEST }}"
           aws-region: "${{ github.event_name == 'workflow_dispatch' && inputs.aws_region || 'eu-west-2' }}"
-          role-to-assume: "${{ secrets.AWS_ROLE_TO_ASSUME }}"
+          role-to-assume: "${{ secrets.AWS_ROLE_TO_ASSUME_RUBRIK_POC_TEST }}"
 
   apply-safety-check:
     name: Apply Safety Check
