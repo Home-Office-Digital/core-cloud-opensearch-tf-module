@@ -1,7 +1,7 @@
 variable "aws_profile" {
   description = "AWS CLI profile used for creating the state bucket"
   type        = string
-  default     = "CCRubrikPOCTest"
+  default     = "AWS_PROFILE_NAME"
 }
 
 variable "region" {

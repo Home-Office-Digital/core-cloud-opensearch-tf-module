@@ -1,9 +1,9 @@
-name: Example CCRubrikPOCTest Apply
+name: Example OpenSearchTest Apply
 
 on:
   workflow_run:
     workflows:
-      - Example CCRubrikPOCTest Plan
+      - Example OpenSearchTest Plan
     types:
       - completed
   workflow_dispatch:
@@ -37,7 +37,10 @@ on:
         description: Branch allowed to run apply
         required: true
         default: feature/CCL-10788-openseach-module
-        type: string
+        type: choice
+        options:
+          - feature/CCL-10788-openseach-module
+          - main
       confirm_apply:
         description: Required. Type APPLY to continue.
         required: true

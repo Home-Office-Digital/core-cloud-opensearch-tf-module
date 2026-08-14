@@ -1,4 +1,4 @@
-# Example CCRubrikPOCTest Workflows
+# Example OpenSearchTest Workflows
 
 This directory contains the GitHub Actions workflows for deploying the `examples/cc-rubrik-poc-test` Terraform root module. Use [examples/cc-rubrik-poc-test/README.md](../../examples/cc-rubrik-poc-test/README.md) for local or AWS SSO deployment instructions.
 
@@ -28,7 +28,7 @@ Workflow: [example-cc-rubrik-poc-test-deploy.yaml](example-cc-rubrik-poc-test-de
 
 The plan workflow runs when code is pushed to `feature/CCL-10788-openseach-module`, or it can be started manually from the GitHub Actions page. Both paths use the repository secrets `AWS_ACCOUNT_ID_RUBRIK_POC_TEST` and `AWS_ROLE_TO_ASSUME_RUBRIK_POC_TEST`.
 
-For a manual run, select **Example CCRubrikPOCTest Plan**, choose **Run workflow**, and provide the inputs below. The defaults describe the current Rubrik PoC deployment.
+For a manual run, select **Example OpenSearchTest Plan**, choose **Run workflow**, and provide the inputs below. The defaults describe the current Rubrik PoC deployment.
 
 | Input | Default | Purpose |
 |---|---|---|
@@ -46,10 +46,10 @@ Workflow: [example-cc-rubrik-poc-test-apply.yaml](example-cc-rubrik-poc-test-app
 
 The apply workflow has two paths:
 
-- It runs automatically after a successful **Example CCRubrikPOCTest Plan** workflow from `feature/CCL-10788-openseach-module`.
+- It runs automatically after a successful **Example OpenSearchTest Plan** workflow from `feature/CCL-10788-openseach-module`.
 - It can be started manually from the GitHub Actions page.
 
-For a manual apply, select **Example CCRubrikPOCTest Apply**, choose the branch named by `apply_branch`, and set `confirm_apply` to `APPLY`. Provide the same Terraform, region, and state values used for the plan, plus:
+For a manual apply, select **Example OpenSearchTest Apply**, choose the branch named by `apply_branch`, and set `confirm_apply` to `APPLY`. Provide the same Terraform, region, and state values used for the plan, plus:
 
 | Input | Default | Purpose |
 |---|---|---|
@@ -62,7 +62,7 @@ The workflow plans again before it applies. A manual run fails its safety check 
 
 Workflow: [example-cc-rubrik-poc-test-destroy.yaml](example-cc-rubrik-poc-test-destroy.yaml)
 
-Destroy is manual only. Select **Example CCRubrikPOCTest Destroy**, choose the branch named by `apply_branch`, provide the same shared values used for apply, and set `confirm_destroy` to `DESTROY`.
+Destroy is manual only. Select **Example OpenSearchTest Destroy**, choose the branch named by `apply_branch`, provide the same shared values used for apply, and set `confirm_destroy` to `DESTROY`.
 
 | Input | Default | Purpose |
 |---|---|---|

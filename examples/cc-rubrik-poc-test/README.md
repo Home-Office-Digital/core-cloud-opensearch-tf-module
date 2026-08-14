@@ -1,6 +1,6 @@
-# CCRubrikPOCTest Example
+#Open SearchTest Example
 
-This example is a thin root module for deploying the child module into the `CCRubrikPOCTest` AWS SSO profile.
+This example is a thin root module for deploying the child module into the `AWS_PROFILE_NAME` AWS SSO profile.
 
 It is intended for quick Rubrik test-account validation and defaults to a low-cost single-node deployment. For production-style usage, prefer a VPC-backed configuration and stricter access policy inputs from the calling stack.
 
@@ -10,14 +10,14 @@ Use the helper script to choose state mode and initialize the example.
 
 AWS login
 ```sh
-aws sso login --profile CCRubrikPOCTest
+aws sso login --profile AWS_PROFILE_NAME
 ```
 
 Local state:
 
 ```sh
 ./examples/cc-rubrik-poc-test/init-state.sh state-bucket=false
-terraform -chdir=examples/cc-rubrik-poc-test plan -var='aws_profile=CCRubrikPOCTest'
+terraform -chdir=examples/cc-rubrik-poc-test plan -var='aws_profile=AWS_PROFILE_NAME'
 ```
 
 Remote state (S3 bucket + backend):
@@ -25,7 +25,7 @@ Remote state (S3 bucket + backend):
 ```sh
 ./examples/cc-rubrik-poc-test/init-state.sh state-bucket=true create-bucket=true
 ./examples/cc-rubrik-poc-test/init-state.sh state-bucket=true
-terraform -chdir=examples/cc-rubrik-poc-test plan -var='aws_profile=CCRubrikPOCTest'
+terraform -chdir=examples/cc-rubrik-poc-test plan -var='aws_profile=AWS_PROFILE_NAME'
 ```
 
 Behavior summary for `state-bucket=true`:
@@ -38,14 +38,14 @@ Behavior summary for `state-bucket=true`:
 Remote state with explicit values:
 
 ```sh
-./examples/cc-rubrik-poc-test/init-state.sh state-bucket=true create-bucket=true bucket-name=cc-rubrik-poc-test-tfstate-opensearch profile=CCRubrikPOCTest region=eu-west-2
-./examples/cc-rubrik-poc-test/init-state.sh state-bucket=true bucket-name=cc-rubrik-poc-test-tfstate-opensearch profile=CCRubrikPOCTest region=eu-west-2
-terraform -chdir=examples/cc-rubrik-poc-test plan -var='aws_profile=CCRubrikPOCTest'
+./examples/cc-rubrik-poc-test/init-state.sh state-bucket=true create-bucket=true bucket-name=cc-rubrik-poc-test-tfstate-opensearch profile=AWS_PROFILE_NAME region=eu-west-2
+./examples/cc-rubrik-poc-test/init-state.sh state-bucket=true bucket-name=cc-rubrik-poc-test-tfstate-opensearch profile=AWS_PROFILE_NAME region=eu-west-2
+terraform -chdir=examples/cc-rubrik-poc-test plan -var='aws_profile=AWS_PROFILE_NAME'
 ```
 
 ## Defaults
 
-- AWS profile: empty (uses environment credentials/OIDC); for local SSO use `CCRubrikPOCTest`
+- AWS profile: empty (uses environment credentials/OIDC); for local SSO use `AWS_PROFILE_NAME`
 - Region: `eu-west-2`
 - Domain name: `cc-rubrik-poc-test`
 - Instance type: `t3.small.search`
@@ -54,9 +54,9 @@ terraform -chdir=examples/cc-rubrik-poc-test plan -var='aws_profile=CCRubrikPOCT
 ## Commands
 
 ```sh
-terraform -chdir=examples/cc-rubrik-poc-test plan -var='aws_profile=CCRubrikPOCTest'
-terraform -chdir=examples/cc-rubrik-poc-test apply -var='aws_profile=CCRubrikPOCTest'
-terraform -chdir=examples/cc-rubrik-poc-test destroy -var='aws_profile=CCRubrikPOCTest'
+terraform -chdir=examples/cc-rubrik-poc-test plan -var='aws_profile=AWS_PROFILE_NAME'
+terraform -chdir=examples/cc-rubrik-poc-test apply -var='aws_profile=AWS_PROFILE_NAME'
+terraform -chdir=examples/cc-rubrik-poc-test destroy -var='aws_profile=AWS_PROFILE_NAME'
 ```
 
 Note: run one of the init-state commands first. Do not run plain `terraform init` before choosing local or remote mode.
@@ -109,13 +109,13 @@ By default, direct browser requests are unsigned and are treated as anonymous, s
 For temporary PoC access, allow your current public IP as a CIDR:
 
 ```sh
-terraform -chdir=examples/cc-rubrik-poc-test apply -var='aws_profile=CCRubrikPOCTest' -var='dashboard_allowed_cidrs=["203.0.113.10/32"]'
+terraform -chdir=examples/cc-rubrik-poc-test apply -var='aws_profile=AWS_PROFILE_NAME' -var='dashboard_allowed_cidrs=["203.0.113.10/32"]'
 ```
 
 When done testing, remove that access and apply again:
 
 ```sh
-terraform -chdir=examples/cc-rubrik-poc-test apply -var='aws_profile=CCRubrikPOCTest' -var='dashboard_allowed_cidrs=[]'
+terraform -chdir=examples/cc-rubrik-poc-test apply -var='aws_profile=AWS_PROFILE_NAME' -var='dashboard_allowed_cidrs=[]'
 ```
 
 ## Instance Type Variants
@@ -123,6 +123,6 @@ terraform -chdir=examples/cc-rubrik-poc-test apply -var='aws_profile=CCRubrikPOC
 To validate a second instance type without editing files:
 
 ```sh
-terraform -chdir=examples/cc-rubrik-poc-test plan -var='aws_profile=CCRubrikPOCTest' -var='instance_type=t3.medium.search'
-terraform -chdir=examples/cc-rubrik-poc-test apply -var='aws_profile=CCRubrikPOCTest' -var='instance_type=t3.medium.search'
+terraform -chdir=examples/cc-rubrik-poc-test plan -var='aws_profile=AWS_PROFILE_NAME' -var='instance_type=t3.medium.search'
+terraform -chdir=examples/cc-rubrik-poc-test apply -var='aws_profile=AWS_PROFILE_NAME' -var='instance_type=t3.medium.search'
 ```

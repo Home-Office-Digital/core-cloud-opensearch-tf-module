@@ -1,8 +1,9 @@
-name: Example CCRubrikPOCTest Plan
+name: Example OpenSearchTest Plan
 
 on:
   push:
     branches:
+      - main
       - feature/CCL-10788-openseach-module
   workflow_dispatch:
     inputs:

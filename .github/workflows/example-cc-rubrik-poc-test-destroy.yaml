@@ -1,4 +1,4 @@
-name: Example CCRubrikPOCTest Destroy
+name: Example OpenSearchTest Destroy
 
 on:
   workflow_dispatch:
@@ -32,7 +32,10 @@ on:
         description: Branch allowed to run destroy
         required: true
         default: feature/CCL-10788-openseach-module
-        type: string
+        type: choice
+        options:
+          - feature/CCL-10788-openseach-module
+          - main
       confirm_destroy:
         description: Required. Type DESTROY to continue.
         required: true

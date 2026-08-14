@@ -8,3 +8,4 @@ override.tf.json
 *_override.tf.json
 .terraform.tfstate.lock.info
 examples/cc-rubrik-poc-test/backend.hcl
+cc-rubrik-poc-test.sh

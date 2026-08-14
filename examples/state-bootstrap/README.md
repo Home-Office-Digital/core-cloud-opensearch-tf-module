@@ -23,7 +23,7 @@ For the current example, use `cc-rubrik-poc-test-tfstate-opensearch`. The bootst
 
 | Input | Default | Use when |
 |---|---|---|
-| `aws_profile` | `CCRubrikPOCTest` | Using a different local AWS CLI or SSO profile |
+| `aws_profile` | `AWS_PROFILE_NAME` | Using a different local AWS CLI or SSO profile |
 | `region` | `eu-west-2` | Creating state in another AWS region |
 | `state_key_prefix` | `opensearch/example/` | Storing this repository's Terraform state under another prefix |
 | `email_address` | `core-cloud-opensearch@example.com` | Routing S3 module notifications to a real mailbox |
@@ -38,11 +38,11 @@ For the current example, use `cc-rubrik-poc-test-tfstate-opensearch`. The bootst
 ## Create Bootstrap Resources
 
 ```sh
-aws sso login --profile CCRubrikPOCTest
+aws sso login --profile AWS_PROFILE_NAME
 terraform -chdir=examples/state-bootstrap init
 terraform -chdir=examples/state-bootstrap apply \
 	-var='bucket_name=cc-rubrik-poc-test-tfstate-opensearch' \
-	-var='aws_profile=CCRubrikPOCTest'
+	-var='aws_profile=AWS_PROFILE_NAME'
 ```
 
 If you want SNS notifications routed to a real mailbox, override the default placeholder email:
@@ -50,7 +50,7 @@ If you want SNS notifications routed to a real mailbox, override the default pla
 ```sh
 terraform -chdir=examples/state-bootstrap apply \
 	-var='bucket_name=cc-rubrik-poc-test-tfstate-opensearch' \
-	-var='aws_profile=CCRubrikPOCTest' \
+	-var='aws_profile=AWS_PROFILE_NAME' \
 	-var='email_address=platform-team@example.com'
 ```
 
@@ -76,7 +76,7 @@ You can override these at apply time:
 ```sh
 terraform -chdir=examples/state-bootstrap apply \
 	-var='bucket_name=cc-rubrik-poc-test-tfstate-opensearch' \
-	-var='aws_profile=CCRubrikPOCTest' \
+	-var='aws_profile=AWS_PROFILE_NAME' \
 	-var='github_repository=Home-Office-Digital/core-cloud-opensearch-tf-module' \
 	-var='github_branches=["main","feature/CCL-10788-openseach-module"]'
 ```
@@ -86,7 +86,7 @@ To create only the bucket and skip IAM role creation:
 ```sh
 terraform -chdir=examples/state-bootstrap apply \
 	-var='bucket_name=cc-rubrik-poc-test-tfstate-opensearch' \
-	-var='aws_profile=CCRubrikPOCTest' \
+	-var='aws_profile=AWS_PROFILE_NAME' \
 	-var='create_github_oidc_role=false'
 ```
 
@@ -96,7 +96,7 @@ After a successful apply, configure these repository secrets:
 
 | Secret | Value |
 |---|---|
-| `AWS_ACCOUNT_ID_RUBRIK_POC_TEST` | The 12-digit account ID returned by `aws sts get-caller-identity --profile CCRubrikPOCTest --query Account --output text` |
+| `AWS_ACCOUNT_ID_RUBRIK_POC_TEST` | The 12-digit account ID returned by `aws sts get-caller-identity --profile AWS_PROFILE_NAME --query Account --output text` |
 | `AWS_ROLE_TO_ASSUME_RUBRIK_POC_TEST` | The `github_oidc_role_name` output, for example `GitHubActionsTerraformOpenSearch` |
 
 `AWS_ROLE_TO_ASSUME_RUBRIK_POC_TEST` must contain only the role name, not the `github_oidc_role_arn` value. The workflow action constructs the role ARN from both secrets.
@@ -117,7 +117,7 @@ When no longer needed:
 ```sh
 terraform -chdir=examples/state-bootstrap destroy \
 	-var='bucket_name=cc-rubrik-poc-test-tfstate-opensearch' \
-	-var='aws_profile=CCRubrikPOCTest'
+	-var='aws_profile=AWS_PROFILE_NAME'
 ```
 
 Note: S3 bucket names are globally unique. If the name is already taken, choose a different one.

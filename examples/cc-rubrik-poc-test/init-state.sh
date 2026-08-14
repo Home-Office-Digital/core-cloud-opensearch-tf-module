@@ -7,10 +7,10 @@ ROOT_DIR=$(CDPATH= cd -- "$SCRIPT_DIR/../.." && pwd)
 BOOTSTRAP_DIR="$ROOT_DIR/examples/state-bootstrap"
 EXAMPLE_DIR="$ROOT_DIR/examples/cc-rubrik-poc-test"
 
-# Defaults keep the command zero-config for CCRubrikPOCTest.
+# Defaults keep the command zero-config for AWS_PROFILE_NAME.
 STATE_BUCKET="false"
 BUCKET_NAME="cc-rubrik-poc-test-tfstate-opensearch"
-PROFILE="CCRubrikPOCTest"
+PROFILE="AWS_PROFILE_NAME"
 REGION="eu-west-2"
 MIGRATE_STATE="false"
 CREATE_BUCKET="false"

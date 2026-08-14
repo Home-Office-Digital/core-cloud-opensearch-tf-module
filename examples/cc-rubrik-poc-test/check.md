@@ -2,7 +2,7 @@
 
 ## Team Demo
 
-Amazon OpenSearch Service deployment for the CCRubrikPOCTest account.
+Amazon OpenSearch Service deployment for the OpenSearchTest account.
 
 ---
 
@@ -81,7 +81,7 @@ For a temporary demo, an operator supplies their public IP as a `/32` CIDR:
 
 ```sh
 terraform -chdir=examples/cc-rubrik-poc-test apply \
-  -var='aws_profile=CCRubrikPOCTest' \
+  -var='aws_profile=AWS_PROFILE_NAME' \
   -var='dashboard_allowed_cidrs=["YOUR.PUBLIC.IP/32"]'
 ```
 
