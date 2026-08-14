@@ -385,9 +385,10 @@ check "subnet_and_security_group_pairing" {
 check "advanced_security_master_user_configuration" {
   assert {
     condition = !var.advanced_security_options_enabled || (
-      ((var.master_user_arn != null ? 1 : 0) + ((var.master_user_name != null && var.master_user_password != null) ? 1 : 0)) == 1
+      ((var.master_user_arn != null ? 1 : 0) + ((var.master_user_name != null && var.master_user_password != null) ? 1 : 0)) == 1 &&
+      (var.master_user_arn != null || var.internal_user_database_enabled)
     )
-    error_message = "When advanced_security_options_enabled is true, set either master_user_arn or both master_user_name and master_user_password."
+    error_message = "When advanced_security_options_enabled is true, set either master_user_arn or both master_user_name and master_user_password. When using master_user_name/master_user_password, internal_user_database_enabled must be true."
   }
 }
 
