@@ -24,7 +24,7 @@ All workflows use remote S3 state. Use the same `state_bucket`, `state_key`, and
 
 ## Plan
 
-Workflow: [example-cc-rubrik-poc-test-deploy.yaml](example-cc-rubrik-poc-test-deploy.yaml)
+Workflow: [example-cc-rubrik-poc-test-plan.yaml](example-cc-rubrik-poc-test-plan.yaml)
 
 The plan workflow runs when code is pushed to `feature/CCL-10788-openseach-module`, or it can be started manually from the GitHub Actions page. Both paths use the repository secrets `AWS_ACCOUNT_ID_RUBRIK_POC_TEST` and `AWS_ROLE_TO_ASSUME_RUBRIK_POC_TEST`.
 
