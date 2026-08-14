@@ -68,6 +68,7 @@ resource "aws_cloudwatch_log_resource_policy" "this" {
   policy_document = data.aws_iam_policy_document.cloudwatch_log_delivery[0].json
 }
 
+#checkov:skip=CKV_AWS_318: Dedicated masters are caller-configurable; when enabled, validation requires at least three. The default supports lower-cost non-HA environments.
 resource "aws_opensearch_domain" "this" {
   domain_name    = var.name
   engine_version = var.engine_version
