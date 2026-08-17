@@ -10,3 +10,4 @@ override.tf.json
 examples/cc-rubrik-poc-test/backend.hcl
 cc-rubrik-poc-test.sh
 checkov-and-sonar-scan.yaml
+.terraform.lock.hcl
