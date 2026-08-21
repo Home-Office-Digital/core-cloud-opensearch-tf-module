@@ -1,6 +1,0 @@
-bucket       = "cc-rubrik-poc-test-tfstate-opensearch"
-key          = "opensearch/example/terraform.tfstate"
-region       = "eu-west-2"
-profile      = "AWS_PROFILE_NAME"
-encrypt      = true
-use_lockfile = true

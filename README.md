@@ -75,65 +75,43 @@ module "opensearch" {
 
 To deploy a private OpenSearch domain, the calling configuration must provide existing private `subnet_ids` and appropriate `security_group_ids`. This module creates the OpenSearch domain only; it does not create a VPC, subnets, route tables, or security groups.
 
-A VPC-based OpenSearch endpoint is not publicly reachable. Users need an approved network path into the VPC, such as VPN, Direct Connect, or an internal proxy or bastion access pattern, to reach OpenSearch Dashboards. The IP-based browser access described in the Rubrik PoC example is only applicable to its public-endpoint deployment.
+A VPC-based OpenSearch endpoint is not publicly reachable. Users need an approved network path into the VPC, such as VPN, Direct Connect, or an internal proxy or bastion access pattern, to reach OpenSearch Dashboards. IP-restricted browser access to Dashboards applies only to public-endpoint deployments.
 
-## Deployable Example
+## Architecture
 
-A deployable Rubrik test-account root module is included in [examples/cc-rubrik-poc-test/](examples/cc-rubrik-poc-test/).
+![Core Cloud OpenSearch AWS architecture](docs/architecture/opensearch-deployment.svg)
 
-Use the dedicated documentation for the deployment method you need:
+The diagram covers both endpoint paths the module supports: a public endpoint with IP-restricted Dashboards access, and a VPC endpoint that uses subnets and security groups owned by the calling configuration.
 
-- Manual deployment, local AWS SSO, backend initialization, and dashboards access: [examples/cc-rubrik-poc-test/README.md](examples/cc-rubrik-poc-test/README.md)
-- GitHub Actions plan, apply, and destroy workflows: [.github/workflows/README.md](.github/workflows/README.md)
-
-For state-bucket and OIDC-role bootstrap instructions, see [examples/state-bootstrap/README.md](examples/state-bootstrap/README.md).
+AWS service icons are taken from the official [AWS Architecture Icons](https://aws.amazon.com/architecture/icons/) set and embedded directly in the SVG, so the diagram renders without external asset lookups. Non-AWS elements (Terraform, GitHub, the engineer, and the generic network path) use equivalent stand-in glyphs.
 
 ### Deployment Flow
 
 ```mermaid
 flowchart TD
-  Start[Choose deployment method] --> Method{Manual Terraform or GitHub Actions?}
-
-  Method -->|Manual Terraform| State{Use remote S3 state?}
-  Method -->|GitHub Actions| Secrets[Use AWS_ACCOUNT_ID_RUBRIK_POC_TEST and AWS_ROLE_TO_ASSUME_RUBRIK_POC_TEST repository secrets]
-  Secrets --> WorkflowState[Initialize with configured S3 backend]
-  WorkflowState --> WorkflowPlan[Run GitHub Actions plan workflow]
-  WorkflowPlan --> WorkflowApply{Apply workflow path}
-  WorkflowApply -->|Successful plan on configured feature branch| AutoApply[Plan again and apply automatically]
-  WorkflowApply -->|Manual run| ConfirmApply[Select apply_branch and set confirm_apply to APPLY]
-  ConfirmApply --> ManualWorkflowApply[Plan again and apply]
-
+  Start[Call the module from a root configuration] --> State{Use remote S3 state?}
   State -->|No| LocalInit[Initialize Terraform with local state]
-  State -->|Yes| BucketCheck{State bucket exists and is accessible?}
-  BucketCheck -->|Yes| Backend[Generate backend.hcl]
-  BucketCheck -->|No| Create{Was create-bucket=true supplied?}
-  Create -->|No| Stop[Stop and report the missing bucket]
-  Create -->|Yes| Bootstrap[Run state-bootstrap Terraform]
-  Bootstrap --> Backend
-  Backend --> RemoteInit[Initialize Terraform with S3 backend]
+  State -->|Yes| Backend[Configure the S3 backend in the root module]
+  Backend --> RemoteInit[Initialize Terraform with the S3 backend]
 
   LocalInit --> Network{Provide subnet_ids?}
   RemoteInit --> Network
-  Network -->|No: current PoC| PublicDomain[Create public OpenSearch domain]
-  PublicDomain --> PublicAccess[Optional Dashboards access from approved IP CIDRs]
+  Network -->|No| PublicDomain[Create public OpenSearch domain]
+  PublicDomain --> PublicAccess[Restrict Dashboards to approved IP CIDRs using access_policy]
   Network -->|Yes| VpcConfig[Provide private subnet_ids and security_group_ids]
   VpcConfig --> PrivateDomain[Create VPC-based OpenSearch domain]
   PrivateDomain --> PrivateAccess[Access Dashboards through VPN, Direct Connect, or internal proxy]
 
-  PublicAccess --> ManualPlan[Run Terraform plan and review]
-  PrivateAccess --> ManualPlan
-  ManualPlan --> ManualApply[Run Terraform apply]
-  ManualApply --> Resources[OpenSearch domain, CloudWatch logs, and domain policy]
-  AutoApply --> Resources
-  ManualWorkflowApply --> Resources
+  PublicAccess --> Plan[Run terraform plan and review]
+  PrivateAccess --> Plan
+  Plan --> Apply[Run terraform apply]
+  Apply --> Resources[OpenSearch domain, CloudWatch log groups, and domain policy]
 
-  Resources --> Destroy{Remove deployment?}
-  Destroy -->|Manual Terraform| ManualDestroy[Run Terraform destroy]
-  Destroy -->|GitHub Actions| ConfirmDestroy[Select apply_branch and set confirm_destroy to DESTROY]
-  ConfirmDestroy --> WorkflowDestroy[Run destroy workflow]
+  Resources --> Destroy{Remove the deployment?}
+  Destroy -->|Yes| TerraformDestroy[Run terraform destroy]
 ```
 
-Manual Terraform can use local or remote S3 state. GitHub Actions always uses the configured remote S3 state and the `AWS_ACCOUNT_ID_RUBRIK_POC_TEST` and `AWS_ROLE_TO_ASSUME_RUBRIK_POC_TEST` repository secrets. The helper creates a state bucket only when `create-bucket=true` is explicitly supplied. The current Rubrik PoC takes the public-domain branch; a private deployment requires the calling configuration to provide existing private subnets and security groups.
+State management, credentials, and CI/CD belong to the calling root module. This child module creates the OpenSearch domain, its CloudWatch log groups, and an optional domain policy. A public domain is created when `subnet_ids` is empty; a private deployment requires the calling configuration to supply existing private subnets and security groups.
 
 ## Design Notes
 
