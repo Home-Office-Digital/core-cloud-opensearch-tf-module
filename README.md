@@ -2,13 +2,14 @@
 
 Core Cloud child Terraform module for provisioning Amazon OpenSearch Service domains using current Home Office repository standards.
 
-The module is based on the ACP Elasticsearch module design, but modernises the implementation for Core Cloud use by:
+The module creates a single OpenSearch domain and its supporting logging resources:
 
-- targeting Amazon OpenSearch Service resources
-- using strongly typed variables and validation
-- removing implicit IAM user creation from the module surface
-- defaulting to encrypted, HTTPS-only domains
-- using the Core Cloud template workflow, semver, and Terraform test structure
+- strongly typed variables with input validation
+- encryption at rest, node-to-node encryption, and HTTPS-only endpoints by default
+- gp3-backed storage with configurable IOPS and throughput
+- optional CloudWatch log delivery, including the log delivery resource policy
+- optional VPC deployment using subnets and security groups owned by the caller
+- optional fine-grained access control and domain access policy
 
 ## Requirements
 
@@ -79,54 +80,43 @@ A VPC-based OpenSearch endpoint is not publicly reachable. Users need an approve
 
 ## Architecture
 
-![Core Cloud OpenSearch AWS architecture](docs/architecture/opensearch-deployment.svg)
-
-The diagram covers both endpoint paths the module supports: a public endpoint with IP-restricted Dashboards access, and a VPC endpoint that uses subnets and security groups owned by the calling configuration.
-
-AWS service icons are taken from the official [AWS Architecture Icons](https://aws.amazon.com/architecture/icons/) set and embedded directly in the SVG, so the diagram renders without external asset lookups. Non-AWS elements (Terraform, GitHub, the engineer, and the generic network path) use equivalent stand-in glyphs.
-
-### Deployment Flow
-
 ```mermaid
 flowchart TD
-  Start[Call the module from a root configuration] --> State{Use remote S3 state?}
-  State -->|No| LocalInit[Initialize Terraform with local state]
-  State -->|Yes| Backend[Configure the S3 backend in the root module]
-  Backend --> RemoteInit[Initialize Terraform with the S3 backend]
+  caller["Calling root configuration"]
 
-  LocalInit --> Network{Provide subnet_ids?}
-  RemoteInit --> Network
-  Network -->|No| PublicDomain[Create public OpenSearch domain]
-  PublicDomain --> PublicAccess[Restrict Dashboards to approved IP CIDRs using access_policy]
-  Network -->|Yes| VpcConfig[Provide private subnet_ids and security_group_ids]
-  VpcConfig --> PrivateDomain[Create VPC-based OpenSearch domain]
-  PrivateDomain --> PrivateAccess[Access Dashboards through VPN, Direct Connect, or internal proxy]
+  subgraph managed["Managed by this module"]
+    domain["aws_opensearch_domain.this"]
+    domain_policy["aws_opensearch_domain_policy.this<br/>created only when access_policy is set"]
+    log_groups["aws_cloudwatch_log_group.this<br/>one per enabled log type"]
+    log_policy["aws_cloudwatch_log_resource_policy.this<br/>allows es.amazonaws.com log delivery"]
+  end
 
-  PublicAccess --> Plan[Run terraform plan and review]
-  PrivateAccess --> Plan
-  Plan --> Apply[Run terraform apply]
-  Apply --> Resources[OpenSearch domain, CloudWatch log groups, and domain policy]
+  subgraph external["Supplied by the caller"]
+    network["Private subnets and security groups"]
+    kms_key["KMS key"]
+  end
 
-  Resources --> Destroy{Remove the deployment?}
-  Destroy -->|Yes| TerraformDestroy[Run terraform destroy]
+  caller --> domain
+  domain --> domain_policy
+  domain -->|"log_publishing_options"| log_groups
+  log_groups --> log_policy
+  network -.->|"subnet_ids set"| domain
+  kms_key -.->|"kms_key_id"| domain
 ```
 
-State management, credentials, and CI/CD belong to the calling root module. This child module creates the OpenSearch domain, its CloudWatch log groups, and an optional domain policy. A public domain is created when `subnet_ids` is empty; a private deployment requires the calling configuration to supply existing private subnets and security groups.
+The module supports two endpoint modes, selected by whether `subnet_ids` is supplied:
+
+| Mode | Condition | Dashboards access |
+|---|---|---|
+| Public endpoint | `subnet_ids` is empty | AWS-managed public endpoint, restricted with an `access_policy` that conditions on `aws:SourceIp` |
+| VPC endpoint | `subnet_ids` and `security_group_ids` supplied | Reachable only over an approved network path into the VPC |
 
 ## Design Notes
 
 - VPC deployment is explicit. The module does not create permissive security groups on your behalf.
 - Access policies are opt-in. Pass `access_policy` when the calling stack needs domain policy management.
-- Fine-grained access control is supported, but caller-owned IAM identities are preferred over module-created IAM users.
+- Fine-grained access control is supported using caller-owned IAM identities. The module does not create IAM users.
 - The interface is intentionally additive so new optional capabilities can be introduced without breaking existing callers.
-
-## Improvements Over ACP Module
-
-- Replaces legacy string booleans with proper Terraform types.
-- Removes default-open network ingress behaviour.
-- Avoids embedding long-lived IAM user management into the child module.
-- Aligns tests, semver workflows, and quality gates to current Core Cloud standards.
-- Uses modern defaults for encryption, HTTPS, and gp3-backed storage.
 
 ## Inputs
 
